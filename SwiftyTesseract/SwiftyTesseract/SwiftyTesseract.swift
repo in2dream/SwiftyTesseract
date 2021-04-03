@@ -186,7 +186,7 @@ extension SwiftyTesseract {
   /// Performs OCR on a `UIImage`
   /// - Parameter image: The image to perform recognition on
   /// - Returns: A result containing the recognized `String `or an `Error` if recognition failed
-  public func performOCR(on image: UIImage) -> Result<String, Swift.Error> {
+    public func performOCR(on image: UIImage, mode: TessPageSegMode = PSM_SINGLE_WORD) -> Result<String, Swift.Error> {
     _ = semaphore.wait(timeout: .distantFuture)
     defer { semaphore.signal() }
 
@@ -199,6 +199,8 @@ extension SwiftyTesseract {
       if TessBaseAPIGetSourceYResolution(tesseract) < 70 {
         TessBaseAPISetSourceResolution(tesseract, 300)
       }
+        
+      TessBaseAPISetPageSegMode(tesseract, mode)
 
       guard let cString = TessBaseAPIGetUTF8Text(tesseract)
         else { return .failure(SwiftyTesseract.Error.unableToExtractTextFromImage) }
